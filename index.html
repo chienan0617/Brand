@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PCET_CHEINAN0617</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&family=Poppins:wght@600;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    :root {
+      --primary-bg: #f5f7fa;
+      --card-bg: rgba(255, 255, 255, 0.85);
+      --text-main: #2d3436;
+      --text-sub: #636e72;
+      --accent: #0984e3;
+      --tag-bg: #6c5ce7;
+      /* 標籤顏色 */
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      background-attachment: fixed;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+      padding: 50px 20px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .brand-tag {
+      font-family: 'Poppins', sans-serif;
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--accent);
+      text-transform: uppercase;
+      font-weight: 800;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--text-main);
+      line-height: 1;
+    }
+
+    #product-container {
+      display: grid;
+      gap: 15px;
+    }
+
+    .product-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 24px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+      color: inherit;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      cursor: pointer;
+    }
+
+    /* 當沒有 URL 時的樣式 */
+    .product-card.no-link {
+      cursor: default;
+      opacity: 0.9;
+    }
+
+    .product-card:not(.no-link):active {
+      transform: scale(0.97);
+    }
+
+    .logo-box {
+      width: 60px;
+      height: 60px;
+      border-radius: 18px;
+      background: #fff;
+      margin-right: 16px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+      flex-shrink: 0;
+    }
+
+    .logo-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .content {
+      flex-grow: 1;
+    }
+
+    .title-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 2px;
+    }
+
+    .content h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    /* 標籤樣式 */
+    .badge {
+      font-size: 10px;
+      background: var(--tag-bg);
+      color: white;
+      padding: 2px 8px;
+      border-radius: 8px;
+      margin-left: 8px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .content p {
+      font-size: 0.85rem;
+      color: var(--text-sub);
+    }
+
+    .arrow-icon {
+      color: #dfe6e9;
+      font-size: 14px;
+    }
+
+    .loader {
+      text-align: center;
+      padding: 20px;
+      color: var(--text-sub);
+      font-size: 14px;
+    }
+
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      font-size: 12px;
+      color: #b2bec3;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <header>
+      <span class="brand-tag">PCET_CHEINAN0617</span>
+      <h1>Explore.</h1>
+    </header>
+
+    <div id="product-container">
+      <div class="loader">正在載入產品清單...</div>
+    </div>
+
+    <footer>
+      <p>© 2026 PCET_CHEINAN0617</p>
+    </footer>
+  </div>
+
+  <script>
+    const jsonUrl = 'https://chienan0617.github.io/layout/dev.cas.brand/product_list.json';
+
+    async function fetchProducts() {
+      const container = document.getElementById('product-container');
+
+      try {
+        const response = await fetch(jsonUrl);
+        if (!response.ok) throw new Error('無法取得資料');
+
+        const products = await response.json();
+        container.innerHTML = '';
+
+        products.forEach(item => {
+          // 判斷是否有 URL，若無則不跳轉且加入特定 class
+          const isLink = item.url !== null;
+          const card = document.createElement(isLink ? 'a' : 'div');
+
+          if (isLink) {
+            card.href = item.url;
+            card.target = "_blank";
+          } else {
+            card.classList.add('no-link');
+          }
+
+          card.className += ' product-card';
+
+          // 處理標籤內容
+          const tagHtml = item.tag ? `<span class="badge">${item.tag}</span>` : '';
+
+          // 處理箭頭顯示：若沒有 URL 則不顯示箭頭或變更顏色
+          const arrowHtml = isLink ? `<i class="fa-solid fa-chevron-right"></i>` : ``;
+
+          card.innerHTML = `
+            <div class="logo-box">
+                <img src="${item.logo}" alt="${item.name}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(item.name)}&background=random'">
+            </div>
+            <div class="content">
+                <div class="title-row">
+                    <h3>${item.name}</h3>
+                    ${tagHtml}
+                </div>
+                <p>${item.desc}</p>
+            </div>
+            <div class="arrow-icon">
+                ${arrowHtml}
+            </div>
+          `;
+
+          container.appendChild(card);
+        });
+
+      } catch (error) {
+        console.error('Error:', error);
+        container.innerHTML = `<div class="loader" style="color: #ff7675;">載入失敗，請確認 JSON 位址是否正確</div>`;
+      }
+    }
+
+    fetchProducts();
+  </script>
+
+</body>
+
+</html>
